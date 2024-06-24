@@ -1,5 +1,7 @@
 import { Box, SimpleGrid, Image, Text, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const products = [
   { id: 1, name: "Smartphone", price: "$699", image: "/images/smartphone.jpg" },
@@ -7,11 +9,26 @@ const products = [
   { id: 3, name: "Headphones", price: "$199", image: "/images/headphones.jpg" },
 ];
 
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
+
 const Products = () => {
+  const [filteredProducts, setFilteredProducts] = useState(products);
+  const query = useQuery();
+  const searchQuery = query.get("search") || "";
+
+  useEffect(() => {
+    setFilteredProducts(
+      products.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [searchQuery]);
   return (
     <Box p={4}>
       <SimpleGrid columns={[1, 2, 3]} spacing={10}>
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <Box key={product.id} borderWidth="1px" borderRadius="lg" overflow="hidden">
             <Image src={product.image} alt={product.name} />
             <Box p={6}>
